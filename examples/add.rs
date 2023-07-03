@@ -1,5 +1,8 @@
-use rust_gpu_tools::{cuda, opencl, program_closures, Device, GPUError, Program, Vendor};
+use rust_gpu_tools::{opencl, program_closures, Device, GPUError, Program, Vendor};
+#[cfg(feature = "cuda")]
+use rust_gpu_tools::cuda;
 
+#[cfg(feature = "cuda")]
 /// Returns a `Program` that runs on CUDA.
 fn cuda(device: &Device) -> Program {
     // The kernel was compiled with:
@@ -10,6 +13,7 @@ fn cuda(device: &Device) -> Program {
     Program::Cuda(cuda_program)
 }
 
+#[cfg(feature = "opencl")]
 /// Returns a `Program` that runs on OpenCL.
 fn opencl(device: &Device) -> Program {
     let opencl_kernel = include_str!("./add.cl");
@@ -59,10 +63,13 @@ pub fn main() {
     let nv_dev_list = Device::by_vendor(Vendor::Nvidia);
     if !nv_dev_list.is_empty() {
         // Test NVIDIA CUDA Flow
-        let cuda_program = cuda(nv_dev_list[0]);
-        let cuda_result = cuda_program.run(closures, ()).unwrap();
-        assert_eq!(cuda_result, [6, 8, 10, 12]);
-        println!("CUDA result: {:?}", cuda_result);
+        #[cfg(feature = "cuda")]
+        {
+            let cuda_program = cuda(nv_dev_list[0]);
+            let cuda_result = cuda_program.run(closures, ()).unwrap();
+            assert_eq!(cuda_result, [6, 8, 10, 12]);
+            println!("CUDA result: {:?}", cuda_result);
+        }
 
         // Test NVIDIA OpenCL Flow
         let opencl_program = opencl(nv_dev_list[0]);

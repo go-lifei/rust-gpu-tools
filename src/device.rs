@@ -28,6 +28,8 @@ const AMD_DEVICE_ON_APPLE_VENDOR_STRING: &str = "AMD";
 const AMD_DEVICE_ON_APPLE_VENDOR_ID: u32 = 0x1021d00;
 const NVIDIA_DEVICE_VENDOR_STRING: &str = "NVIDIA Corporation";
 const NVIDIA_DEVICE_VENDOR_ID: u32 = 0x10de;
+// Apple M1 Max
+const AMD_DEVICE_ON_APPLE_M1_VENDOR_ID: u32 = 0x1027f00;
 
 // The owned CUDA contexts are stored globally. Each devives contains an unowned reference, so
 // that devices can be cloned.
@@ -203,6 +205,7 @@ impl TryFrom<u32> for Vendor {
         match vendor {
             AMD_DEVICE_VENDOR_ID => Ok(Self::Amd),
             AMD_DEVICE_ON_APPLE_VENDOR_ID => Ok(Self::Amd),
+            AMD_DEVICE_ON_APPLE_M1_VENDOR_ID => Ok(Self::Amd),
             INTEL_DEVICE_VENDOR_ID => Ok(Self::Intel),
             NVIDIA_DEVICE_VENDOR_ID => Ok(Self::Nvidia),
             _ => Err(GPUError::UnsupportedVendor(format!("0x{:x}", vendor))),
